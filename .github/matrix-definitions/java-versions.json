@@ -1,0 +1,10 @@
+[
+    {
+        "java":"8",
+        "runOn":"always"
+    },
+    {
+        "java":"11",
+        "runOn":"develop"
+    }
+]

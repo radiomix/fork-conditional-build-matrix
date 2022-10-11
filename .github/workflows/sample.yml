@@ -1,0 +1,41 @@
+name: Sample
+
+on:
+  workflow_dispatch:
+  push:
+
+
+jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        uses: ./ # Uses an action in the root directory
+        with:
+          filter: '[?runOn==`${{ github.ref }}` || runOn==`always`]'
+          # addInclude: true # Defaults to true
+          inputFile: '.github/matrix-definitions/java-versions.json'
+
+  build:
+    needs: matrix_prep
+    strategy:
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Java version ${{ matrix.java }}
+      run: |
+        echo " matrix:${{fromJson(needs.matrix_prep.outputs.matrix)}}"
+        echo "matrix.runOn:${{ matrix.runOn }}"
+        echo "$runs_on:${{ matrix.runs_on }}"
+        echo "$java:${{ matrix.java }}"
+      shell: bash
+
+    - uses: actions/setup-java@v3
+      name:  install java version ${{ matrix.java }}
+      with:
+        distribution: 'corretto'
+        java-version: ${{ matrix.java }}
