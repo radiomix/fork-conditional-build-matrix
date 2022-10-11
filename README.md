@@ -1,0 +1,2 @@
+- forked from https://github.com/JoshuaTheMiller/conditional-build-matrix
+- install 2 java versions according filtered by branch names
